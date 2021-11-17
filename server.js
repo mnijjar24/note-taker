@@ -2,70 +2,81 @@ const express = require('express');
 const fs = require('fs');
 const path = require("path")
 
-const PORT = process.env.PORT || 3017;
+const PORT = process.env.PORT || 3021;
 const app = express();
 
-
-app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
-app.use(express.static(__dirname + './public/assets'));
+app.use(express.urlencoded({ extended: true }));
 
-app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/assets/html/index.html"));
-});
+let idCount = 1;
+const notesD = path.join(__dirname, 'db', 'db.json');
 
-app.get("/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/assets/html/notes.html"));
-});
-
-app.get("/api/notes", function (req, res) {
-    res.sendFile(path.join(__dirname, "./public/assets/db/db.json"));
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 
-// POST
-app.post("/api/notes", function (req, res) {
-    const notes = req.body;
-    fs.readFile(__dirname + "/public/assets/db/db.json", 'utf8', function noteTaker(err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            obj = JSON.parse(data);
-            obj.table.push(notes);
-            json = JSON.stringify(obj);
-            fs.writeFile(__dirname + "/public/assets/db/db.json", json, 'utf8', (err) => {
-                if (err) throw err;
-                console.log('Saved');
-            });
-        };
+app.get('/notes', function (req, res) {
+    res.sendFile(path.join(__dirname, 'public', 'notes.html'));
+});
+
+
+app.get('/api/notes', function (req, res) {
+    fs.readFile(notesD, (err, data) => {
+        const noteOne = noNote(err, data);
+        res.json(noteOne);
     });
-
-    res.json(notes);
 });
 
 
-//DELETE
-app.delete('/api/notes/:note', function (req, res) {
-    const note = req.params.note;
-    fs.read(__dirname + "/public/assets/db/db.json", 'utf8', function readFileCallback(err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            obj = JSON.parse(data);
+app.post('/api/notes', function (req, res) {
+    const notes = req.body;
+    fs.readFile(notesD, (err, data) => {
+        const noteOne = noNote(err, data);
+        addNote(notes, noteOne);
+        writeAndSendNotes(noteOne, res);
+    });
+});
 
-            let objOne = obj.table.filter(function (e) {
-                return e.id !== note;
-            });
-            let objTwo = { "table": objOne }
-            json = JSON.stringify(objTwo);
-            fs.writeFile(__dirname + "/public/assets/db/db.json", json, 'utf8', (err) => {
-                if (err) throw err;
-                console.log('File saved!');
-            });
+
+
+app.delete('/api/notes/:id', function (req, res) {
+    const id = parseInt(req.params.id);
+    fs.readFile(notesD, (err, data) => {
+        const noteOne = noNote(err, data);
+        deleteNote(id, noteOne);
+        writeAndSendNotes(noteOne, res);
+    });
+});
+
+
+function writeAndSendNotes(secondNote, res) {
+    const jsonS = JSON.stringify(secondNote);
+    fs.writeFile(notesD, jsonS, (err) => {
+        if (err) throw err;
+        res.json(secondNote);
+    });
+}
+function noNote(err, data) {
+    if (err) throw err;
+    return JSON.parse(data);
+}
+function addNote(notes, noteOne) {
+
+
+    notes.id = idCount++;
+    noteOne.push(notes);
+}
+function deleteNote(id, noteOne) {
+    let noteIndex;
+    noteOne.forEach(function (note, index) {
+        if (note.id === id) {
+            noteIndex = index;
         }
     });
-    res.json(newNote);
-});
+    noteOne.splice(noteIndex, 1);
+}
 
 
 app.listen(PORT, () => {
