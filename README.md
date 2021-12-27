@@ -6,6 +6,12 @@ Note taker is an application where a small business owner is able to write and s
 
 ## Screenshots of the Note Taker Application 
 
+![1](https://user-images.githubusercontent.com/87215165/147446803-3a359208-0776-4f47-bce2-43454735a449.png)
+
+![2](https://user-images.githubusercontent.com/87215165/147446808-93a74b0e-2965-4c69-9f01-9fb8910b931e.png)
+
+![3](https://user-images.githubusercontent.com/87215165/147446817-6a085e60-dda6-421c-9de5-740c19853a92.png)
+
 ## Links
 
 Deployed Application: 
