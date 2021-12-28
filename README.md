@@ -14,6 +14,6 @@ Note taker is an application where a small business owner is able to write and s
 
 ## Links
 
-Deployed Application: 
-Github Repo:
-Link to walkthrough video:
+Deployed Application: https://mnijjar24.github.io/note-taker/
+Github Repo: https://github.com/mnijjar24/note-taker
+Link to walkthrough video: https://youtu.be/uppNnf5AVK0
